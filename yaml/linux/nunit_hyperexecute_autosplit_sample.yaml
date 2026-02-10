@@ -11,26 +11,24 @@ env:
   NUGET_PLUGINS_CACHE_PATH: '/home/ltuser/.local/share/NuGet/plugins-cache'
 
 pre:
- - wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
+ - curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh
  - chmod +x dotnet-install.sh
  - ./dotnet-install.sh --channel 8.0 --install-dir $HOME/.dotnet
  - export PATH="$HOME/.dotnet:$PATH"
+ - export DOTNET_ROOT=$HOME/.dotnet
  - dotnet --version
  - dotnet restore
  - dotnet list NUnitHyperTestDemo/NUnitHyperTestDemo.csproj package > packages.txt
  - dotnet build -c Release
+
 testDiscovery:
   type: raw
   mode: dynamic
   command: grep 'Category' NUnitHyperTestDemo -ir --include=\*.cs --exclude=DriverFactory.cs --exclude=HyperTestDemo.AssemblyInfo.cs | awk -F'"' '{print$2}'
 
-testRunnerCommand: dotnet test NUnitHyperTestDemo.sln --filter TestCategory=$test 
+testRunnerCommand: export PATH="$HOME/.dotnet:$PATH" && export DOTNET_ROOT=$HOME/.dotnet && dotnet test NUnitHyperTestDemo.sln --filter TestCategory=$test 
 
 retryOnFailure: true
 maxRetries: 1
 
-jobLabel: [selenium-Nunit, linux, autosplit]  
-
-runtime:
-  language: dotnet
-  version: 8
+jobLabel: [selenium-Nunit, linux, autosplit]
