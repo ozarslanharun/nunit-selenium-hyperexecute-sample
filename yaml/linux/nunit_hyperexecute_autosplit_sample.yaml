@@ -11,10 +11,14 @@ env:
   NUGET_PLUGINS_CACHE_PATH: '/home/ltuser/.local/share/NuGet/plugins-cache'
 
 pre:
+ - wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
+ - chmod +x dotnet-install.sh
+ - ./dotnet-install.sh --channel 8.0 --install-dir $HOME/.dotnet
+ - export PATH="$HOME/.dotnet:$PATH"
+ - dotnet --version
  - dotnet restore
  - dotnet list NUnitHyperTestDemo/NUnitHyperTestDemo.csproj package > packages.txt
  - dotnet build -c Release
-
 testDiscovery:
   type: raw
   mode: dynamic
